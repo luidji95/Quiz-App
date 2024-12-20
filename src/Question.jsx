@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-
-function Question({ question, asnwer }) {
-  const [currentQuestinon, setCurrentQuestion] = useState(1);
-
-  return <h1>This is Question section! </h1>;
-}
+const Question = ({ data, onNext }) => {
+  return (
+    <div className="question-card">
+      <h2>{data.question}</h2>
+      <button onClick={onNext}>Next Question</button>
+    </div>
+  );
+};
 
 export default Question;

@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import QuizSetup from "./QuizSetup";
 import Question from "./Question";
 
 function App() {
   const [questions, setQuestions] = useState([]);
-  const [isSetUpComplete, setSetupComplete] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const fetchData = async (amount, category, difficulty) => {
     try {
@@ -16,22 +15,35 @@ function App() {
       );
       const data = await response.json();
       setQuestions(data.results);
+      setLoading(false); // Prekida učitavanje nakon što se podaci preuzmu
     } catch (error) {
       console.error("Error fetching data", error);
     }
   };
 
   const handleStart = (amount, category, difficulty) => {
+    setLoading(true); // Postavi loading na true pre pokretanja fetch-a
     fetchData(amount, category, difficulty);
-    setSetupComplete(true);
+  };
+
+  const handleNextQuestion = () => {
+    setCurrentQuestion((prev) =>
+      prev === questions.length - 1 ? 0 : prev + 1
+    );
   };
 
   return (
-    <div className="div-box">
-      {isSetUpComplete ? (
-        <Question></Question>
+    <div className="app">
+      <QuizSetup onSetUpComplete={handleStart} />
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <QuizSetup onSetUpComplete={handleStart}></QuizSetup>
+        <div className="questions-list">
+          <Question
+            data={questions[currentQuestion]}
+            onNext={handleNextQuestion}
+          />
+        </div>
       )}
     </div>
   );
